@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventário de Crenças Limitantes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    h1, h2 {
+      color: #2a2a2a;
+    }
+    .question {
+      margin-bottom: 15px;
+    }
+    .result {
+      padding: 15px;
+      background-color: #e7f3ea;
+      border-left: 5px solid #4CAF50;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Inventário de Crenças Limitantes</h1>
+  <p>Responda cada item conforme a frequência com que esse pensamento ocorre em sua mente.</p>
+  <form id="beliefForm"></form>
+  <button onclick="calcularResultados()">Concluir e Ver Resultados</button>
+  <div id="resultados" class="result" style="display:none;"></div>
+
+  <script>
+    const perguntas = [
+      "Não consigo suportar certas coisas que me acontecem",
+      "Só me acontecem coisas ruins",
+      "Tudo o que faço dá errado",
+      "Sei que pensam mal de mim",
+      "E se eu tiver uma doença grave?",
+      "Sou inferior às pessoas em quase tudo",
+      "Se os outros mudassem sua atitude, eu me sentiria melhor",
+      "Não é justo que me tratem assim!",
+      "Se estou triste é porque sou um doente mental",
+      "Meus problemas dependem das pessoas ao meu redor",
+      "Sou um desastre como pessoa",
+      "Eu tenho a culpa de tudo que acontece comigo",
+      "Eu deveria estar bem e não ter esses problemas",
+      "Sei que estou certo e não me entendem",
+      "Mesmo sofrendo agora, um dia terei minha recompensa",
+      "É horrível que isso aconteça comigo",
+      "Minha vida é um fracasso constante",
+      "Sempre terei esse problema",
+      "Sei que estão mentindo e me enganando",
+      "E se eu enlouquecer e perder a cabeça?",
+      "Sou superior às pessoas em quase tudo",
+      "Sou responsável pelo sofrimento dos que me cercam",
+      "Se realmente me amassem, não me tratariam assim",
+      "Sinto-me culpado, e é porque eu fiz algo errado",
+      "Se tivesse mais apoio, não teria esses problemas",
+      "Alguém que conheço é um idiota",
+      "Os outros são culpados pelo que me acontece",
+      "Eu não deveria cometer esses erros",
+      "Não quer reconhecer que estou certo",
+      "Tempos melhores virão",
+      "É insuportável, não aguento mais",
+      "Sou incompetente e inútil",
+      "Nunca conseguirei sair dessa situação",
+      "Querem me fazer o mal",
+      "E se algo ruim acontecer com quem eu amo?",
+      "As pessoas fazem as coisas melhor que eu",
+      "Sou vítima das minhas circunstâncias",
+      "Não me tratam como eu mereço",
+      "Se tenho esses sintomas, é porque sou doente",
+      "Se minha situação financeira fosse melhor, não teria esses problemas",
+      "Sou um neurótico",
+      "O que me acontece é castigo que eu mereço",
+      "Deveria receber mais atenção e carinho dos outros",
+      "Tenho razão e vou fazer o que quero",
+      "Mais cedo ou mais tarde as coisas vão melhorar"
+    ];
+
+    const grupos = {
+      "Filtragem": [0, 15, 30],
+      "Pensamento Polarizado": [1, 16, 31],
+      "Sobregeneralização": [2, 17, 32],
+      "Leitura Mental": [3, 18, 33],
+      "Visão Catastrófica": [4, 19, 34],
+      "Personalização": [5, 20, 35],
+      "Falácias de Controle": [6, 21, 36],
+      "Falácia de Justiça": [7, 22, 37],
+      "Raciocínio Emocional": [8, 23, 38],
+      "Mudança Externa": [9, 24, 39],
+      "Rotulagem Global": [10, 25, 40],
+      "Culpabilidade": [11, 26, 41],
+      "'Deverias'": [12, 27, 42],
+      "Preciso ter razão": [13, 28, 43],
+      "Recompensa Divina": [14, 29, 44]
+    };
+
+    const form = document.getElementById('beliefForm');
+    perguntas.forEach((pergunta, i) => {
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.innerHTML = `<label>${i + 1}. ${pergunta}</label><br>
+        ${[0, 1, 2, 3].map(v => 
+          `<label><input type="radio" name="q${i}" value="${v}" required> ${v}</label>`).join(" ")}`;
+      form.appendChild(div);
+    });
+
+    function calcularResultados() {
+      const respostas = [];
+      for (let i = 0; i < perguntas.length; i++) {
+        const val = form[`q${i}`].value;
+        respostas.push(parseInt(val));
+      }
+
+      let saida = "<h2>Resultado do Inventário</h2><ul>";
+      for (const [categoria, indices] of Object.entries(grupos)) {
+        const soma = indices.map(i => respostas[i]).reduce((a, b) => a + b, 0);
+        let interpretacao = "";
+        if (soma <= 3) interpretacao = "✅ Sem indícios relevantes.";
+        else if (soma <= 5) interpretacao = "⚠️ Indícios leves. Observe-se.";
+        else interpretacao = "❗ Crença limitante provável. Reflita e considere apoio.";
+
+        saida += `<li><strong>${categoria}:</strong> ${soma} pontos — ${interpretacao}</li>`;
+      }
+      saida += "</ul><p><strong>Dica:</strong> Com autoconhecimento e apoio, é possível transformar padrões limitantes em crenças fortalecedoras.</p><p>Considere agendar uma sessão de coaching para aprofundar esse processo.</p>";
+
+      const resultadoDiv = document.getElementById('resultados');
+      resultadoDiv.innerHTML = saida;
+      resultadoDiv.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
